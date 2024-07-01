@@ -14,7 +14,7 @@ app.get("/api/hello", async (req, res) => {
 	if (!visitor_name)
 		return res.status(400).json({ message: "Visitor name query is required" });
 
-	const ip = "41.203.78.171";
+	const ip = req.ip || "41.203.78.171";
 	// console.log(req.ip);
 
 	try {
@@ -26,7 +26,7 @@ app.get("/api/hello", async (req, res) => {
         console.log(process.env.API_KEY);
 
 		const response = await fetch(
-			`https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&appid=${process.env.API_KEY}`,
+			`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${process.env.API_KEY}&units=metric`,
 			{
 				method: "GET",
 			}
@@ -40,9 +40,11 @@ app.get("/api/hello", async (req, res) => {
 
 		console.log(data);
 
-		const temperature = "11 degrees Celcius";
+		const temperature = data.main ?  `${data.main.temp} degrees Celcius` : "Unknown";
 
 		res.status(200).json({
+			client_ip: api,
+			location: city,
 			greeting: `Hello, ${visitor_name}! the temprature is ${temperature} in ${city}`,
 		});
 	} catch (err) {

@@ -4,6 +4,8 @@ import "dotenv/config";
 
 const app = express();
 
+app.set('trust proxy', true);
+
 app.get("/", (_, res) => {
 	res.send("Welcome to my HNG Task one");
 });
@@ -14,7 +16,7 @@ app.get("/api/hello", async (req, res) => {
 	if (!visitor_name)
 		return res.status(400).json({ message: "Visitor name query is required" });
 
-	const ip = req.ip;
+	const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
 
 	try {
 		const geo = await geoip.lookup(ip);
